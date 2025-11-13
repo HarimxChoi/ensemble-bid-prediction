@@ -1,4 +1,4 @@
- [**English**](readme.md) | [**한국어**](readme_kr.md)
+ [**English**](README.md) | [**한국어**](README_KR.md)
 # Ensemble Bid Prediction System
 
 ![Status](https://img.shields.io/badge/Status-Production-success)
