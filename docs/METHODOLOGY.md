@@ -10,12 +10,12 @@ The two models complement each other:
 
 **Temporal validation (prevents data leakage):**
 
-| Phase | Period | Records | Purpose |
-|-------|--------|---------|---------|
-| Training | Years 1-8 | 800K | Model training |
-| Validation | Year 9 | 100K | Hyperparameter tuning |
-| Test | Year 10 | 100K | Performance evaluation |
-| Production | 6 months | 75 bids | Real deployment |
+| Phase | Records | Purpose |
+|-------|---------|---------|
+| Training | 800K | Model training |
+| Validation | 100K | Hyperparameter tuning |
+| Test | 100K | Performance evaluation |
+| Production | 75 bids | Real deployment |
 
 **Critical:** Chronological order maintained to ensure realistic estimates.
 
