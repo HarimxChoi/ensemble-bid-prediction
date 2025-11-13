@@ -6,7 +6,7 @@
 ![Tech](https://img.shields.io/badge/Tech-NGBoost_+_XGBoost-orange)
 
 Hybrid machine learning system for government procurement bidding optimization, 
-achieving **3x improvement in win rate** (2.5% → 7.5%) in highly competitive markets.
+achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive markets.
 
 ---
 ### System Architecture
@@ -315,7 +315,7 @@ Prevents data leakage and ensures realistic performance estimates.
 
 This system was developed for a civil engineering firm operating in 
 Korean government procurement markets. The solution has been in 
-production for 6+ months, consistently delivering 7.5% win rates 
+production for 6+ months, consistently delivering 8.0% win rates 
 in a binary outcome (win or nothing) market.
 
 **Skills demonstrated:**
