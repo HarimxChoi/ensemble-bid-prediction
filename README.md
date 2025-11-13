@@ -9,6 +9,38 @@ Hybrid machine learning system for government procurement bidding optimization,
 achieving **3x improvement in win rate** (2.5% → 7.5%) in highly competitive markets.
 
 ---
+### System Architecture
+```
+Historical Bid Data (10 years, 1M records)
+    ↓
+[Stage 1: NGBoost]
+    ├─ Agency bias detection (statistical testing)
+    ├─ Uncertainty quantification
+    └─ Confidence scoring
+    ↓
+Bias Scores + Uncertainty Scores + Other Features
+    ↓
+[Stage 2: XGBoost]
+    ├─ Bid rate prediction (bid/base price)
+    ├─ Binary outcome optimization (win or nothing)
+    └─ Bid recommendation
+    ↓
+Final Bid Rate → Bid Price
+```
+
+---
+
+## Performance Results
+
+### Win Rate Improvement
+
+| Metric | Baseline | Optimized | Improvement |
+|--------|----------|-----------|-------------|
+| **Company Win Rate** | 2.5% | **8%** | **3.2x** |
+| **vs. Market Avg** | 2.5x | 8.0x | - |
+| **Error Reduction** | - | - | ~68.75% |
+
+---
 
 ## Problem Context
 
@@ -81,37 +113,6 @@ and is not publicly disclosed.
 - Predict bid rate that maximizes P(win) in binary outcome market
 
 ---
-
-### System Architecture
-```
-Historical Bid Data (10 years, 1M records)
-    ↓
-[Stage 1: NGBoost]
-    ├─ Agency bias detection (statistical testing)
-    ├─ Uncertainty quantification
-    └─ Confidence scoring
-    ↓
-Bias Scores + Uncertainty Scores + Other Features
-    ↓
-[Stage 2: XGBoost]
-    ├─ Bid rate prediction (bid/base price)
-    ├─ Binary outcome optimization (win or nothing)
-    └─ Bid recommendation
-    ↓
-Final Bid Rate → Bid Price
-```
-
----
-
-## Performance Results
-
-### Win Rate Improvement
-
-| Metric | Baseline | Optimized | Improvement |
-|--------|----------|-----------|-------------|
-| **Company Win Rate** | 2.5% | **8%** | **3.2x** |
-| **vs. Market Avg** | 2.5x | 8.0x | - |
-| **Error Reduction** | - | - | ~68.75% |
 
 **Training Data:**
 - Historical records: **1M bids** (10 years)
