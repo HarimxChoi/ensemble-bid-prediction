@@ -1,4 +1,4 @@
-[**English**](readme.md) | [**한국어**](readme_kr.md)
+[**English**](README.md) | [**한국어**](README_KR.md)
 
 # 앙상블 입찰 예측 시스템
 
