@@ -12,21 +12,38 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 ---
 ### System Architecture
 ```
-Historical Bid Data (10 years, 1M records)
-    ↓
-[Stage 1: NGBoost]
-    ├─ Agency bias detection (statistical testing)
-    ├─ Uncertainty quantification
-    └─ Confidence scoring
-    ↓
-Bias Scores + Uncertainty Scores + Other Features
-    ↓
-[Stage 2: XGBoost]
-    ├─ Bid rate prediction (bid/base price)
-    ├─ Binary outcome optimization (win or nothing)
-    └─ Bid recommendation
-    ↓
-Final Bid Rate → Bid Price
+┌────────────────────────────────────────────────────┐
+│   GOVERNMENT BID PREDICTION ARCHITECTURE           │
+└────────────────────────────────────────────────────┘
+
+DATA LAYER (7 Years Historical)
+├─ Target Sector:     1M records
+├─ Cross-Agency:      10M records
+└─ Features:          60+ engineered
+
+        ↓ Feature Engineering ↓
+
+HYBRID ENSEMBLE MODEL
+┌─────────────────┐         ┌─────────────────┐
+│    NGBoost      │    ───▶ │    XGBoost     │
+│  (10M records)  │         │  (1M records)   │
+├─────────────────┤         ├─────────────────┤
+│ • Uncertainty   │         │ • Classification│
+│ • Agency Pattern│         │ • 60+ Features  │
+│ • Threshold     │         │ • Final Decision│
+└─────────────────┘         └─────────────────┘
+         │                           │
+         └─────── Ensemble ──────────┘
+                    ↓
+         ┌─────────────────┐
+         │  SHAP Analysis  │
+         │  + Deployment   │
+         └─────────────────┘
+
+RESULTS
+✓ Win Rate: 2.5% → 7.5% (3x)
+✓ 10M Records Analyzed
+✓ Production Ready
 ```
 
 ---
