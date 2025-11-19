@@ -25,7 +25,7 @@ DATA LAYER (7 Years Historical)
 
 HYBRID ENSEMBLE MODEL
 ┌─────────────────┐         ┌─────────────────┐
-│    NGBoost      │    ───▶ │    XGBoost     │
+│    NGBoost      │   ───▶ │    XGBoost      │
 │  (10M records)  │         │  (1M records)   │
 ├─────────────────┤         ├─────────────────┤
 │ • Uncertainty   │         │ • Classification│
