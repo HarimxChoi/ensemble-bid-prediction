@@ -71,14 +71,6 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 │  • Win Probability Scores                           │
 └─────────────────────────────────────────────────────┘
 
- * Key Metrics
-┌──────────────────────────────────────┐
-│ Win Rate:     2.5% → 7.5% (3x)       │
-│ Dataset:      10M records analyzed   │
-│ Features:     60+ engineered         │
-│ Uncertainty:  NGBoost quantification │
-│ Deployment:   Production ready       │
-└──────────────────────────────────────┘
 ```
 ## Data Flow
 1. Ingest: 10M historical records
