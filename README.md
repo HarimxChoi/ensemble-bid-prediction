@@ -71,7 +71,7 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 │  • Win Probability Scores                           │
 └─────────────────────────────────────────────────────┘
 
-## Key Metrics
+ * Key Metrics
 ┌──────────────────────────────────────┐
 │ Win Rate:     2.5% → 7.5% (3x)       │
 │ Dataset:      10M records analyzed   │
