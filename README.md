@@ -70,7 +70,7 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 │  • Decision Support Dashboard                       │
 │  • Win Probability Scores                           │
 └─────────────────────────────────────────────────────┘
-
+```
 ## Key Metrics
 ┌──────────────────────────────────────┐
 │ Win Rate:     2.5% → 7.5% (3x)       │
@@ -107,7 +107,7 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 - XGBoost uses NGBoost output as meta-feature
 - Weighted combination based on confidence
 - Threshold tuning for precision/recall balance
-```
+
 
 ---
 
