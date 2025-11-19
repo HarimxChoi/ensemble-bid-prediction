@@ -70,7 +70,7 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 │  • Decision Support Dashboard                       │
 │  • Win Probability Scores                           │
 └─────────────────────────────────────────────────────┘
-```
+
 ## Key Metrics
 ┌──────────────────────────────────────┐
 │ Win Rate:     2.5% → 7.5% (3x)       │
@@ -79,7 +79,7 @@ achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive m
 │ Uncertainty:  NGBoost quantification │
 │ Deployment:   Production ready       │
 └──────────────────────────────────────┘
-
+```
 ## Data Flow
 1. Ingest: 10M historical records
 2. Segment: 1M target + 9M agency patterns
