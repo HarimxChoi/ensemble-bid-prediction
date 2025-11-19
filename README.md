@@ -10,40 +10,101 @@ Hybrid machine learning system for government procurement bidding optimization,
 achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive markets.
 
 ---
-### System Architecture
-```
-┌────────────────────────────────────────────────────┐
-│   GOVERNMENT BID PREDICTION ARCHITECTURE           │
-└────────────────────────────────────────────────────┘
+# Government Bid Prediction System Architecture
 
-DATA LAYER (7 Years Historical)
-├─ Target Sector:     1M records
-├─ Cross-Agency:      10M records
-└─ Features:          60+ engineered
+## Data Pipeline
+┌─────────────────────────────────────────────────────┐
+│  Data Sources (7 Years Historical)                  │
+├─────────────────────────────────────────────────────┤
+│  • Target Sector: 1M bid records                    │
+│  • Cross-Agency: 10M bid records                    │
+│  • Features: Agency, Amount, Date, Category, etc.   │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│  Feature Engineering Layer                          │
+├─────────────────────────────────────────────────────┤
+│  • Temporal Features (seasonality, trends)          │
+│  • Agency Behavior (historical win rates)           │
+│  • Market Competition (bid count, amount range)     │
+│  • 60+ Engineered Features                          │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│  Hybrid Ensemble Model                              │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  ┌─────────────────┐     ┌─────────────────┐        │
+│  │   NGBoost       │     │   XGBoost       │        │
+│  │  (10M records)  │     │  (1M records)   │        │
+│  ├─────────────────┤     ├─────────────────┤        │
+│  │ • Uncertainty   │───▶│ • Classification│        │
+│  │   Quantification│     │ • 60+ Features  │        │
+│  │ • Agency Pattern│     │ • Gradient      │        │
+│  │ • Threshold     │     │   Boosting      │        │
+│  │   Distribution  │     │                 │        │
+│  └─────────────────┘     └─────────────────┘        │
+│           │                      │                  │
+│           └──────────┬───────────┘                  │
+│                      ↓                              │
+│           ┌─────────────────┐                       │
+│           │ Ensemble Layer  │                       │
+│           │ (Weighted Avg)  │                       │
+│           └─────────────────┘                       │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│  Model Interpretation & Analysis                    │
+├─────────────────────────────────────────────────────┤
+│  • SHAP Feature Importance                          │
+│  • Agency-specific Threshold Trends                 │
+│  • Prediction Confidence Scores                     │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│  Production Deployment                              │
+├─────────────────────────────────────────────────────┤
+│  • Real-time Bid Evaluation                         │
+│  • Decision Support Dashboard                       │
+│  • Win Probability Scores                           │
+└─────────────────────────────────────────────────────┘
 
-        ↓ Feature Engineering ↓
+## Key Metrics
+┌──────────────────────────────────────┐
+│ Win Rate:     2.5% → 7.5% (3x)       │
+│ Dataset:      10M records analyzed   │
+│ Features:     60+ engineered         │
+│ Uncertainty:  NGBoost quantification │
+│ Deployment:   Production ready       │
+└──────────────────────────────────────┘
 
-HYBRID ENSEMBLE MODEL
-┌─────────────────┐         ┌─────────────────┐
-│    NGBoost      │   ───▶ │    XGBoost      │
-│  (10M records)  │         │  (1M records)   │
-├─────────────────┤         ├─────────────────┤
-│ • Uncertainty   │         │ • Classification│
-│ • Agency Pattern│         │ • 60+ Features  │
-│ • Threshold     │         │ • Final Decision│
-└─────────────────┘         └─────────────────┘
-         │                           │
-         └─────── Ensemble ──────────┘
-                    ↓
-         ┌─────────────────┐
-         │  SHAP Analysis  │
-         │  + Deployment   │
-         └─────────────────┘
+## Data Flow
+1. Ingest: 10M historical records
+2. Segment: 1M target + 9M agency patterns
+3. Engineer: 60+ features per record
+4. Train: NGBoost (uncertainty) + XGBoost (classification)
+5. Predict: Bid win probability
+6. Deploy: Real-time decision support
 
-RESULTS
-✓ Win Rate: 2.5% → 7.5% (3x)
-✓ 10M Records Analyzed
-✓ Production Ready
+## Model Components
+
+### NGBoost Layer (Agency Pattern Analysis)
+- Input: 10M agency-level records
+- Output: Threshold distribution per agency
+- Purpose: Capture uncertainty in agency behavior
+- Key Features: Historical thresholds, seasonality
+
+### XGBoost Layer (Final Classification)
+- Input: 1M target bids + NGBoost predictions
+- Output: Win/Loss probability
+- Purpose: Final decision with all features
+- Key Features: 60+ engineered + NGBoost output
+
+### Ensemble Strategy
+- NGBoost provides uncertainty quantification
+- XGBoost uses NGBoost output as meta-feature
+- Weighted combination based on confidence
+- Threshold tuning for precision/recall balance
 ```
 
 ---
