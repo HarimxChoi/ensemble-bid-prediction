@@ -10,6 +10,7 @@ Hybrid machine learning system for government procurement bidding optimization,
 achieving **3x improvement in win rate** (2.5% → 8.0%) in highly competitive markets.
 
 ---
+```
 # Government Bid Prediction System Architecture
 
 ## Data Pipeline
