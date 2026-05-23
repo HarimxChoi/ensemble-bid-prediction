@@ -1,0 +1,54 @@
+# Datasets and artifacts (intentionally not committed)
+data/
+dataset/
+models/
+models1/
+analysis_results/
+logs/
+*.csv
+*.parquet
+*.xlsx
+*.pkl
+*.pth
+*.json
+!package.json
+!.github/**/*.json
+*.log
+*.txt
+!requirements.txt
+!requirements-*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual envs
+.venv/
+venv/
+env/
+xgb-test-venv/
+virtualenv/
+catboost_info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+*.key
+
+# Logs
+logdir/
+debug_*/
+_api_debug/
