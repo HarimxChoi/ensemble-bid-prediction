@@ -22,6 +22,10 @@ PQ bidding is structurally unequal. Technical score determines each company's `m
 
 The pip R2CCP package uses APS cumulative-mass intervals that collapse bimodal distributions. This implementation switches to **per-bin threshold** for distribution-shape preservation.
 
+![pip R2CCP vs r2ccp_2 on a bimodal distribution](./r2ccp-comparison.png)
+
+*pip R2CCP merges both modes (plus the empty space between) into one interval. r2ccp_2 keeps the two peaks as disjoint intervals.*
+
 | | pip R2CCP | this impl |
 |---|---|---|
 | Interval | APS cumulative | Per-bin threshold |

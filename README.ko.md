@@ -21,6 +21,10 @@ PQ 입찰은 구조적으로 불평등. 기술점수가 회사별 `min_bid_rate`
 
 pip R2CCP는 APS cumulative-mass interval을 쓰는데, bimodal 분포 두 봉우리를 한 덩어리로 뭉개버린다 (interval collapse). **per-bin threshold**로 전환해서 분포 형태 그대로 보존.
 
+![pip R2CCP vs r2ccp_2 (bimodal 분포)](./r2ccp-comparison.png)
+
+*pip R2CCP는 두 봉우리와 그 사이 빈 공간까지 하나의 interval로 합쳐버림. r2ccp_2는 두 봉우리를 disjoint interval로 그대로 유지.*
+
 | | pip R2CCP | this impl |
 |---|---|---|
 | Interval | APS cumulative | Per-bin threshold |
