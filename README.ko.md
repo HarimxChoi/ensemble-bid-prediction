@@ -2,24 +2,24 @@
 
 [English](./README.md) | 한국어
 
-R2CCP 기반 한국 PQ (qualification review) 입찰 시스템. 분포 예측 + Monte Carlo 최적화.
+PQ 입찰 사정율 예측. R2CCP 분포 예측 + Monte Carlo 입찰률 최적화.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 ## What it does
 
-공공조달 PQ 입찰의 최적 `normalized_bid_rate`를 예측. 낙찰가를 point prediction이 아닌 분포 문제로 다룸.
+공공조달 PQ 입찰에서 최적 `normalized_bid_rate` 예측. 낙찰가를 point prediction이 아니라 분포 문제로 본다.
 
 ## Why
 
-PQ 입찰은 구조적으로 불평등함. 기술점수가 회사별 `min_bid_rate`를 결정하기 때문에, 점수가 높은 회사일수록 입찰 자유도가 넓음. "낙찰가"를 단일 숫자로 예측하면 이런 구조적 비대칭성과 경쟁사 입찰 분포의 multi-modal 형태를 둘 다 무시하게 됨.
+PQ 입찰은 구조적으로 불평등. 기술점수가 회사별 `min_bid_rate`를 결정하므로 점수가 높을수록 입찰 자유도가 넓다. "낙찰가"를 단일 숫자로 예측하면 이 비대칭성과 경쟁사 입찰의 multi-modal 형태를 둘 다 놓침.
 
 ## Approach
 
 ### R2CCP custom impl (`r2ccp_2.py`)
 
-pip R2CCP 패키지는 APS cumulative-mass interval을 쓰는데, 이게 bimodal 분포를 뭉개버림 (interval collapse 발견). 이 구현은 **per-bin threshold**로 전환해서 분포 형태를 보존함.
+pip R2CCP는 APS cumulative-mass interval을 쓰는데, bimodal 분포 두 봉우리를 한 덩어리로 뭉개버린다 (interval collapse). **per-bin threshold**로 전환해서 분포 형태 그대로 보존.
 
 | | pip R2CCP | this impl |
 |---|---|---|
@@ -31,7 +31,7 @@ pip R2CCP 패키지는 APS cumulative-mass interval을 쓰는데, 이게 bimodal
 
 ### 8 context models (Q x BRD)
 
-Q-group: ranking quantile (Q1 head-of-pack vs Q2 tail). BRD-group: bid-rate-difference 사분위.
+Q-group: ranking quantile (Q1 head-of-pack vs Q2 tail). BRD-group: bid-rate-difference quartile.
 
 ```
               BRD_1  BRD_2  BRD_3  BRD_4
@@ -43,19 +43,19 @@ Context별 conformal alpha (`group_alphas`)를 90-95% coverage로 튜닝.
 
 ### Monte Carlo simulation (500K iterations)
 
-`[0.975, 1.025]` 구간을 `0.0005` step으로 훑어서 후보 입찰률 `r`마다:
+`[0.975, 1.025]` 구간을 `0.0005` step으로 훑는다. 후보 입찰률 `r`마다:
 
 1. `yega`를 `Normal(institution_mean, institution_std)`에서 샘플
 2. 경쟁사 입찰률을 tiered model (dedicated / behavioral / global)로 샘플
 3. 승수 카운트
 
-대수의 법칙으로 `P(win | r)` 추정. `tol_validity` 전략은 max `P(win)`의 `tolerance=0.02` 범위 안에서 validity가 가장 높은 입찰률을 고름.
+대수의 법칙으로 `P(win | r)` 추정. `tol_validity` 전략은 max `P(win)` 대비 `tolerance=0.02` 안에서 validity 최대인 입찰률 선택.
 
 ## Results (aggregate)
 
-- Context별 lift: argmax / tol_validity 전략 (context별로 +1.2 ~ +6.0%p)
-- Coverage diagnostics: out-of-time 입찰 기준 90% CI 안에 평균 84.2%
-- Backtest 평균 낙찰률 상승: 대략 +2.0%p (회사별 편차 있음)
+- Context별 lift: argmax / tol_validity 전략 (context별 +1.2 ~ +6.0%p)
+- Coverage: out-of-time 입찰 기준 90% CI 안에 평균 84.2%
+- Backtest 평균 낙찰률: 약 +2.0%p (회사별 편차 있음)
 
 ## Repository layout
 
@@ -106,7 +106,7 @@ python backtest_simulation_tolerance.py
 
 ## Repository note
 
-이 repo는 방법론, R2CCP custom impl, MC simulation engine, context별 학습 파이프라인을 제공함. 학습 데이터, fitted model artifact, 회사별 backtest 테이블은 의도적으로 미포함.
+방법론, R2CCP custom impl, MC simulation engine, context별 학습 파이프라인 공개. 학습 데이터, fitted model artifact, 회사별 backtest 테이블은 의도적으로 제외.
 
 ## References
 
