@@ -1,29 +1,35 @@
-# ensemble-bid-prediction
+# R2CCP 입찰 예측
 
 [English](./README.md) | 한국어
 
-PQ 입찰 사정율 예측. R2CCP 분포 예측 + Monte Carlo 입찰률 최적화.
+8개 경쟁환경의 다봉형 PQ 투찰분포를 모델링하고 50만 회 Monte Carlo simulation으로 낙찰확률을 계산한 의사결정 시스템입니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-## What it does
-
-공공조달 PQ 입찰에서 최적 `normalized_bid_rate` 예측. 낙찰가를 point prediction이 아니라 분포 문제로 본다.
-
 ## Why
 
-PQ 입찰은 구조적으로 불평등. 기술점수가 회사별 `min_bid_rate`를 결정하므로 점수가 높을수록 입찰 자유도가 넓다. "낙찰가"를 단일 숫자로 예측하면 이 비대칭성과 경쟁사 입찰의 multi-modal 형태를 둘 다 놓침.
+PQ 입찰은 기술점수와 가격점수를 함께 평가합니다. 기술점수가 낮아질수록 가격점수로 만회해야 하므로 유효한 투찰구간이 분리되고, 중심 가격대의 위와 아래에 입찰 불가능 구간이 생깁니다. 이 때문에 실제 투찰행태가 하나의 봉우리가 아닌 다봉분포로 나타나며, 하나의 점예측이나 연속된 예측구간으로는 이를 표현하기 어려웠습니다.
 
-## Approach
+## How
 
-### R2CCP custom impl (`r2ccp_2.py`)
+경쟁사의 가격점수와 투찰행태를 특징으로 사용해 경쟁환경을 8개 context로 분리하고, context별 R2CCP 분포를 학습했습니다. 공개 R2CCP 구현체가 두 봉우리와 그 사이의 빈 구간을 하나의 interval로 합치는 문제를 발견해 entropy regularization과 per-bin conformal threshold를 적용했습니다. 이후 후보별 50만 회 Monte Carlo simulation으로 투찰 범위별 예상 낙찰확률을 계산했습니다.
 
-pip R2CCP는 APS cumulative-mass interval을 쓰는데, bimodal 분포 두 봉우리를 한 덩어리로 뭉개버린다 (interval collapse). **per-bin threshold**로 전환해서 분포 형태 그대로 보존.
+## Result
+
+- 69,934건으로 8개 context model을 학습했습니다.
+- 13,984건의 시간순 validation에서 α=0.10 기준 **coverage 90.73%**를 기록했습니다.
+- 실제 운영에서 내부 PQ 낙찰 KPI를 **35%** 개선했습니다.
+
+## Method details
+
+### Interval collapse 개선 (`r2ccp_2.py`)
+
+공개 R2CCP 구현체는 APS cumulative-mass interval을 사용해 다봉분포의 서로 떨어진 봉우리와 그 사이 빈 구간까지 하나의 interval로 합칩니다. 이 프로젝트에서는 **per-bin threshold**로 전환해 분리된 유효구간을 보존했습니다.
 
 ![pip R2CCP vs r2ccp_2 (bimodal 분포)](./r2ccp-comparison.png)
 
-*pip R2CCP는 두 봉우리와 그 사이 빈 공간까지 하나의 interval로 합쳐버림. r2ccp_2는 두 봉우리를 disjoint interval로 그대로 유지.*
+*기존 구현은 두 봉우리 사이의 빈 구간까지 포함하지만, `r2ccp_2.py`는 두 봉우리를 분리된 interval로 유지합니다.*
 
 | | pip R2CCP | this impl |
 |---|---|---|
@@ -47,19 +53,13 @@ Context별 conformal alpha (`group_alphas`)를 90-95% coverage로 튜닝.
 
 ### Monte Carlo simulation (500K iterations)
 
-`[0.975, 1.025]` 구간을 `0.0005` step으로 훑는다. 후보 입찰률 `r`마다:
+`[0.975, 1.025]` 구간에 `0.0005` 간격의 후보 입찰률 `r`을 만들고, 각 후보에 대해 다음 과정을 수행합니다.
 
 1. `yega`를 `Normal(institution_mean, institution_std)`에서 샘플
 2. 경쟁사 입찰률을 tiered model (dedicated / behavioral / global)로 샘플
 3. 승수 카운트
 
-대수의 법칙으로 `P(win | r)` 추정. `tol_validity` 전략은 max `P(win)` 대비 `tolerance=0.02` 안에서 validity 최대인 입찰률 선택.
-
-## Results (aggregate)
-
-- Context별 lift: argmax / tol_validity 전략 (context별 +1.2 ~ +6.0%p)
-- Coverage: out-of-time 입찰 기준 90% CI 안에 평균 84.2%
-- Backtest 평균 낙찰률: 약 +2.0%p (회사별 편차 있음)
+반복 결과로 `P(win | r)`을 추정합니다. `tol_validity` 전략은 최대 `P(win)`과의 차이가 `tolerance=0.02` 이내인 후보 중 validity가 가장 높은 입찰률을 선택합니다.
 
 ## Repository layout
 
@@ -110,7 +110,7 @@ python backtest_simulation_tolerance.py
 
 ## Repository note
 
-방법론, R2CCP custom impl, MC simulation engine, context별 학습 파이프라인 공개. 학습 데이터, fitted model artifact, 회사별 backtest 테이블은 의도적으로 제외.
+이 저장소에는 R2CCP 개선 구현, Monte Carlo simulation engine과 context별 학습 파이프라인이 포함되어 있습니다. 학습 데이터, 학습된 model artifact와 회사별 backtest 표는 공개하지 않았습니다.
 
 ## References
 

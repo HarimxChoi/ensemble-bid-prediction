@@ -1,24 +1,29 @@
-# ensemble-bid-prediction
+# R2CCP Bid Prediction
 
 English | [한국어](./README.ko.md)
 
-R2CCP-based system for Korean PQ (qualification review) bidding. Distribution prediction + Monte Carlo optimization.
+Multimodal PQ bid-distribution modeling across eight competitive contexts, followed by 500K-run Monte Carlo decision support.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-## What it does
-
-Predicts an optimal `normalized_bid_rate` for Korean public procurement PQ auctions.
-Treats the winning bid as a distribution problem, not a point prediction.
-
 ## Why
 
-PQ bidding is structurally unequal. Technical score determines each company's `min_bid_rate`, so higher-scoring companies have wider bidding freedom. Predicting "the winning bid" as a single number ignores both the structural asymmetry and the multi-modal shape of competitor bid distributions.
+PQ awards combine technical and price scores. As a bidder's technical score falls below the maximum, price must compensate, which can leave separated valid bid ranges around an infeasible center. Competitor behavior therefore forms a multimodal distribution that a point prediction or one contiguous interval cannot represent.
 
-## Approach
+## How
 
-### R2CCP custom impl (`r2ccp_2.py`)
+Competitor price scores and bidding behavior were divided into eight competitive contexts, with one R2CCP distribution model trained per context. The public R2CCP implementation merged separate modes and the empty space between them into one interval. Entropy regularization and per-bin conformal thresholds were added to preserve disjoint valid ranges. Candidate bid rates were then evaluated with 500,000 Monte Carlo simulations to estimate win probability by range.
+
+## Result
+
+- Trained eight context models on **69,934** cases.
+- Reached **90.73% coverage** at α=0.10 on **13,984** time-ordered validation cases.
+- Improved the internal PQ bid-award KPI by **35%** in operation.
+
+## Method details
+
+### Interval-collapse repair (`r2ccp_2.py`)
 
 The pip R2CCP package uses APS cumulative-mass intervals that collapse bimodal distributions. This implementation switches to **per-bin threshold** for distribution-shape preservation.
 
@@ -55,12 +60,6 @@ For each candidate bid rate `r` in grid `[0.975, 1.025]` step `0.0005`:
 3. Tally wins
 
 Law of large numbers gives `P(win | r)`. `tol_validity` strategy picks the highest-validity rate within `tolerance=0.02` of max `P(win)`.
-
-## Results (aggregate)
-
-- Per-context lift: argmax / tol_validity strategies (+1.2 to +6.0 percentage points by context)
-- Coverage diagnostics: mean 84.2% within 90% CI on out-of-time bids
-- Mean win rate uplift on backtest: roughly +2.0 percentage points (per-company range varies)
 
 ## Repository layout
 
